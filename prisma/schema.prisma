@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  DRIVER
+  PASSENGER
+}
+
+enum KYCStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum RideStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  DEBIT_CARD
+  PAYPAL
+  UPI
+  CASH
+}
+
+enum ScheduleStatus {
+  OPEN
+  CLOSED
+  CANCELED
+}
+
+model User {
+  id          String           @id @default(uuid())
+  email       String           @unique
+  password    String
+  role        Role
+  name        String
+  phone       String?
+  rating      Float?           @default(0.0)
+  kycStatus   KYCStatus        @default(PENDING)
+  kyc         KYCVerification?
+  kycVerified Boolean          @default(false)
+
+  vehicle Vehicle? // Fixed relation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  ridesAsDriver    Ride[]        @relation("DriverRides")
+  ridesAsPassenger Ride[]        @relation("PassengerRides")
+  rideRequests     RideRequest[]
+
+  scheduledRidesPosted ScheduledRide[] @relation("UserPostedScheduledRides")
+  scheduledRidesJoined ScheduledRide[] @relation("UserJoinedScheduledRides") // Removed `references: [id]`
+
+  messagesSent     Message[] @relation("SentMessages")
+  messagesReceived Message[] @relation("ReceivedMessages")
+}
+
+model KYCVerification {
+  id               String            @id @default(uuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id])
+  driverDetails    DriverDetails?
+  passengerDetails PassengerDetails?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model DriverDetails {
+  id           String          @id @default(uuid())
+  kycId        String          @unique
+  kyc          KYCVerification @relation(fields: [kycId], references: [id])
+  licensePhoto String
+  vehiclePhoto String
+  vehicleType  String
+  vehiclePlate String          @unique
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model PassengerDetails {
+  id             String          @id @default(uuid())
+  kycId          String          @unique
+  kyc            KYCVerification @relation(fields: [kycId], references: [id])
+  studentId      String?
+  passengerPhoto String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Vehicle {
+  id           String   @id @default(uuid())
+  driverId     String   @unique
+  make         String
+  model        String
+  licensePlate String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  driver User @relation(fields: [driverId], references: [id]) // Fixed relation
+}
+
+model RideRequest {
+  id              String     @id @default(uuid())
+  passengerId     String
+  pickupLocation  String
+  dropoffLocation String
+  requestTime     DateTime   @default(now())
+  status          RideStatus @default(PENDING)
+
+  passenger User    @relation(fields: [passengerId], references: [id])
+  ride      Ride?   @relation(fields: [rideId], references: [id])
+  rideId    String? @unique // Fixed one-to-one relation
+}
+
+model Ride {
+  id          String     @id @default(uuid())
+  driverId    String
+  passengerId String
+  startTime   DateTime?
+  endTime     DateTime?
+  route       String?
+  fare        Float
+  status      RideStatus @default(PENDING)
+
+  driver      User         @relation("DriverRides", fields: [driverId], references: [id])
+  passenger   User         @relation("PassengerRides", fields: [passengerId], references: [id])
+  payment     Payment?
+  rideRequest RideRequest?
+}
+
+model ScheduledRide {
+  id              String         @id @default(uuid())
+  postedById      String
+  isDriverPosting Boolean
+  startTime       DateTime?
+  endTime         DateTime?
+  route           String?
+  fare            Float
+  location        String
+  availableSeats  Int
+  dateRange       String
+  status          ScheduleStatus @default(OPEN)
+  payment         Payment?
+
+  postedBy   User   @relation("UserPostedScheduledRides", fields: [postedById], references: [id]) // Fixed relation
+  passengers User[] @relation("UserJoinedScheduledRides") // Fixed missing inverse relation
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  rideId          String?       @unique
+  scheduledRideId String?       @unique
+  amount          Float
+  method          PaymentMethod
+  status          PaymentStatus @default(PENDING)
+
+  ride          Ride?          @relation(fields: [rideId], references: [id], map: "Payment_rideId_fkey")
+  scheduledRide ScheduledRide? @relation(fields: [scheduledRideId], references: [id], map: "Payment_scheduledRideId_fkey")
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  content    String
+  timestamp  DateTime @default(now())
+
+  sender   User @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id])
+}
