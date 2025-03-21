@@ -8,26 +8,29 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from '../../common/guards/roles.guard';
 
 @Controller('passenger-details')
-@UseGuards(
+// @UseGuards(
     // JwtAuthGuard, 
-    RolesGuard)
+    // RolesGuard)
 export class PassengerController {
   constructor(private readonly passengerService: PassengerService) {}
 
   @Post()
-  @Roles(Role.PASSENGER)
+  // @Roles(Role.PASSENGER)
   async create(@Req() req, @Body() createPassengerDto: CreatePassengerDto) {
-    return this.passengerService.create(req.user.role, createPassengerDto);
+    req;
+    return this.passengerService.create(
+      // req.user.role, 
+      createPassengerDto);
   }
 
   @Patch(':id')
-  @Roles(Role.PASSENGER)
+  // @Roles(Role.PASSENGER)
   async update(@Req() req, @Param('id') id: string, @Body() updatePassengerDto: UpdatePassengerDto) {
     return this.passengerService.update(req.user.role, id, updatePassengerDto);
   }
 
   @Delete(':id')
-  @Roles(Role.PASSENGER)
+  // @Roles(Role.PASSENGER)
   async delete(@Req() req, @Param('id') id: string) {
     return this.passengerService.delete(req.user.role, id);
   }

@@ -7,16 +7,21 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from '../common/guards/roles.guard';
 
 @Controller('ride-request')
-@UseGuards(
+// @UseGuards(
   // JwtAuthGuard, 
-  RolesGuard)
+  // RolesGuard)
 export class RideRequestController {
   constructor(private readonly rideRequestService: RideRequestService) {}
 
   @Post()
-  @Roles(Role.PASSENGER)
+  // @Roles(Role.PASSENGER)
   async create(@Req() req, @Body() createRideRequestDto: CreateRideRequestDto) {
-    return this.rideRequestService.create(req.user.role, req.user.id, req.user.kycVerified, createRideRequestDto);
+    req;
+    return this.rideRequestService.create(
+      // req.user.role, 
+      // req.user.id, 
+      // req.user.kycVerified, 
+      createRideRequestDto);
   }
 
   @Get()

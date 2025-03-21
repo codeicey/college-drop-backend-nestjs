@@ -7,10 +7,12 @@ import { RideStatus } from '@prisma/client';
 export class RideRequestRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(passengerId: string, createRideRequestDto: CreateRideRequestDto) {
+  async create(
+    // passengerId: string, 
+    createRideRequestDto: CreateRideRequestDto) {
     return this.prisma.rideRequest.create({
       data: {
-        passengerId,
+        // passengerId,
         ...createRideRequestDto,
       },
     });

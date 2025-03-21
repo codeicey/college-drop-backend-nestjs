@@ -1,18 +1,9 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'DRIVER', 'PASSENGER');
 
-  - You are about to drop the column `createdAt` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the column `endLocation` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the column `price` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the column `scheduleId` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the column `startLocation` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the column `updatedAt` on the `Ride` table. All the data in the column will be lost.
-  - You are about to drop the `DriverSchedule` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `RidePassenger` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `fare` to the `Ride` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `passengerId` to the `Ride` table without a default value. This is not possible if the table is not empty.
+-- CreateEnum
+CREATE TYPE "KYCStatus" AS ENUM ('PENDING', 'VERIFIED', 'REJECTED');
 
-*/
 -- CreateEnum
 CREATE TYPE "RideStatus" AS ENUM ('PENDING', 'ACCEPTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELED');
 
@@ -25,39 +16,58 @@ CREATE TYPE "PaymentMethod" AS ENUM ('CREDIT_CARD', 'DEBIT_CARD', 'PAYPAL', 'UPI
 -- CreateEnum
 CREATE TYPE "ScheduleStatus" AS ENUM ('OPEN', 'CLOSED', 'CANCELED');
 
--- DropForeignKey
-ALTER TABLE "DriverSchedule" DROP CONSTRAINT "DriverSchedule_driverId_fkey";
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL,
+    "name" TEXT NOT NULL,
+    "phone" TEXT,
+    "rating" DOUBLE PRECISION DEFAULT 0.0,
+    "kycStatus" "KYCStatus" NOT NULL DEFAULT 'PENDING',
+    "kycVerified" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
--- DropForeignKey
-ALTER TABLE "Ride" DROP CONSTRAINT "Ride_scheduleId_fkey";
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
--- DropForeignKey
-ALTER TABLE "RidePassenger" DROP CONSTRAINT "RidePassenger_rideId_fkey";
+-- CreateTable
+CREATE TABLE "KYCVerification" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- DropForeignKey
-ALTER TABLE "RidePassenger" DROP CONSTRAINT "RidePassenger_user_fkey";
+    CONSTRAINT "KYCVerification_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "Ride" DROP COLUMN "createdAt",
-DROP COLUMN "endLocation",
-DROP COLUMN "price",
-DROP COLUMN "scheduleId",
-DROP COLUMN "startLocation",
-DROP COLUMN "updatedAt",
-ADD COLUMN     "fare" DOUBLE PRECISION NOT NULL,
-ADD COLUMN     "passengerId" TEXT NOT NULL,
-ADD COLUMN     "route" TEXT,
-ADD COLUMN     "status" "RideStatus" NOT NULL DEFAULT 'PENDING',
-ALTER COLUMN "startTime" DROP NOT NULL;
+-- CreateTable
+CREATE TABLE "DriverDetails" (
+    "id" TEXT NOT NULL,
+    "kycId" TEXT NOT NULL,
+    "licensePhoto" TEXT NOT NULL,
+    "vehiclePhoto" TEXT NOT NULL,
+    "vehicleType" TEXT NOT NULL,
+    "vehiclePlate" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- AlterTable
-ALTER TABLE "User" ADD COLUMN     "rating" DOUBLE PRECISION DEFAULT 0.0;
+    CONSTRAINT "DriverDetails_pkey" PRIMARY KEY ("id")
+);
 
--- DropTable
-DROP TABLE "DriverSchedule";
+-- CreateTable
+CREATE TABLE "PassengerDetails" (
+    "id" TEXT NOT NULL,
+    "kycId" TEXT NOT NULL,
+    "studentId" TEXT,
+    "passengerPhoto" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- DropTable
-DROP TABLE "RidePassenger";
+    CONSTRAINT "PassengerDetails_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Vehicle" (
@@ -83,6 +93,20 @@ CREATE TABLE "RideRequest" (
     "rideId" TEXT,
 
     CONSTRAINT "RideRequest_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Ride" (
+    "id" TEXT NOT NULL,
+    "driverId" TEXT NOT NULL,
+    "passengerId" TEXT NOT NULL,
+    "startTime" TIMESTAMP(3),
+    "endTime" TIMESTAMP(3),
+    "route" TEXT,
+    "fare" DOUBLE PRECISION NOT NULL,
+    "status" "RideStatus" NOT NULL DEFAULT 'PENDING',
+
+    CONSTRAINT "Ride_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -134,6 +158,21 @@ CREATE TABLE "_UserJoinedScheduledRides" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "KYCVerification_userId_key" ON "KYCVerification"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DriverDetails_kycId_key" ON "DriverDetails"("kycId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DriverDetails_vehiclePlate_key" ON "DriverDetails"("vehiclePlate");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "PassengerDetails_kycId_key" ON "PassengerDetails"("kycId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Vehicle_driverId_key" ON "Vehicle"("driverId");
 
 -- CreateIndex
@@ -151,8 +190,14 @@ CREATE UNIQUE INDEX "Payment_scheduledRideId_key" ON "Payment"("scheduledRideId"
 -- CreateIndex
 CREATE INDEX "_UserJoinedScheduledRides_B_index" ON "_UserJoinedScheduledRides"("B");
 
--- RenameForeignKey
-ALTER TABLE "KYCVerification" RENAME CONSTRAINT "KYCVerification_user_fkey" TO "KYCVerification_userId_fkey";
+-- AddForeignKey
+ALTER TABLE "KYCVerification" ADD CONSTRAINT "KYCVerification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "DriverDetails" ADD CONSTRAINT "DriverDetails_kycId_fkey" FOREIGN KEY ("kycId") REFERENCES "KYCVerification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "PassengerDetails" ADD CONSTRAINT "PassengerDetails_kycId_fkey" FOREIGN KEY ("kycId") REFERENCES "KYCVerification"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Vehicle" ADD CONSTRAINT "Vehicle_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -162,6 +207,9 @@ ALTER TABLE "RideRequest" ADD CONSTRAINT "RideRequest_passengerId_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "RideRequest" ADD CONSTRAINT "RideRequest_rideId_fkey" FOREIGN KEY ("rideId") REFERENCES "Ride"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Ride" ADD CONSTRAINT "Ride_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Ride" ADD CONSTRAINT "Ride_passengerId_fkey" FOREIGN KEY ("passengerId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

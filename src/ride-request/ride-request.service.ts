@@ -8,14 +8,20 @@ import { Role, RideStatus } from '@prisma/client';
 export class RideRequestService {
   constructor(private readonly rideRequestRepository: RideRequestRepository) {}
 
-  async create(userRole: Role, userId: string, kycVerified: boolean, createRideRequestDto: CreateRideRequestDto) {
-    if (!kycVerified) {
-      throw new ForbiddenException('Only KYC verified users can request rides.');
-    }
-    if (userRole !== Role.PASSENGER) {
-      throw new ForbiddenException('Only passengers can request rides.');
-    }
-    return this.rideRequestRepository.create(userId, createRideRequestDto);
+  async create(
+    // userRole: Role, 
+    // userId: string, 
+    // kycVerified: boolean, 
+    createRideRequestDto: CreateRideRequestDto) {
+    // if (!kycVerified) {
+    //   throw new ForbiddenException('Only KYC verified users can request rides.');
+    // }
+    // if (userRole !== Role.PASSENGER) {
+    //   throw new ForbiddenException('Only passengers can request rides.');
+    // }
+    return this.rideRequestRepository.create(
+      // userId,
+       createRideRequestDto);
   }
 
   async findAll() {

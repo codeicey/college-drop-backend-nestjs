@@ -11,8 +11,8 @@ export class RideController {
   constructor(private readonly rideService: RideService) {}
 
   @Post()
-  @UseGuards(RolesGuard)
-  @Roles(Role.DRIVER)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.DRIVER)
   create(@Body() createRideDto: CreateRideDto) {
     return this.rideService.create(createRideDto);
   }

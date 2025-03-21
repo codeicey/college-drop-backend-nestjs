@@ -8,10 +8,12 @@ import { Role } from '@prisma/client';
 export class DriverService {
   constructor(private readonly driverRepository: DriverRepository) {}
 
-  async create(userRole: Role, createDriverDto: CreateDriverDto) {
-    if (userRole !== Role.DRIVER) {
-      throw new ForbiddenException('Only drivers can create driver details.');
-    }
+  async create(
+    // userRole: Role, 
+    createDriverDto: CreateDriverDto) {
+    // if (userRole !== Role.DRIVER) {
+    //   throw new ForbiddenException('Only drivers can create driver details.');
+    // }
     return this.driverRepository.create(createDriverDto);
   }
 
