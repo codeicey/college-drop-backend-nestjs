@@ -8,26 +8,29 @@ import { Role } from '@prisma/client';
 import { RolesGuard } from '../../common/guards/roles.guard';
 
 @Controller('driver-details')
-@UseGuards(
+// @UseGuards(
     // JwtAuthGuard, 
-    RolesGuard)
+    // RolesGuard)
 export class DriverController {
   constructor(private readonly driverService: DriverService) {}
 
   @Post()
-  @Roles(Role.DRIVER)
+  // @Roles(Role.DRIVER)
   async create(@Req() req, @Body() createDriverDto: CreateDriverDto) {
-    return this.driverService.create(req.user.role, createDriverDto);
+    req;
+    return this.driverService.create(
+      // req.user.role, 
+      createDriverDto);
   }
 
   @Patch(':id')
-  @Roles(Role.DRIVER)
+  // @Roles(Role.DRIVER)
   async update(@Req() req, @Param('id') id: string, @Body() updateDriverDto: UpdateDriverDto) {
     return this.driverService.update(req.user.role, id, updateDriverDto);
   }
 
   @Delete(':id')
-  @Roles(Role.DRIVER)
+  // @Roles(Role.DRIVER)
   async delete(@Req() req, @Param('id') id: string) {
     return this.driverService.delete(req.user.role, id);
   }

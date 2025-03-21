@@ -8,10 +8,12 @@ import { Role } from '@prisma/client';
 export class PassengerService {
   constructor(private readonly passengerRepository: PassengerRepository) {}
 
-  async create(userRole: Role, createPassengerDto: CreatePassengerDto) {
-    if (userRole !== Role.PASSENGER) {
-      throw new ForbiddenException('Only passengers can create passenger details.');
-    }
+  async create(
+    // userRole: Role, 
+    createPassengerDto: CreatePassengerDto) {
+    // if (userRole !== Role.PASSENGER) {
+    //   throw new ForbiddenException('Only passengers can create passenger details.');
+    // }
     return this.passengerRepository.create(createPassengerDto);
   }
 

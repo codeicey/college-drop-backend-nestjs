@@ -7,10 +7,12 @@ import { Role } from '@prisma/client';
 export class KycService {
   constructor(private readonly kycRepository: KycRepository) {}
 
-  async createKyc(userRole: Role, createKycDto: CreateKycDto) {
-    if (userRole !== Role.ADMIN) {
-      throw new ForbiddenException('Only admins can create KYC records.');
-    }
+  async createKyc(
+    // userRole: Role,
+     createKycDto: CreateKycDto) {
+    // if (userRole !== Role.ADMIN) {
+    //   throw new ForbiddenException('Only admins can create KYC records.');
+    // }
     return this.kycRepository.create(createKycDto);
   }
 

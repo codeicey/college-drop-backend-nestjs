@@ -14,9 +14,14 @@ export class KycController {
   constructor(private readonly kycService: KycService) {}
 
   @Post()
-  @Roles(Role.ADMIN)
-  async createKyc(@Req() req, @Body() createKycDto: CreateKycDto) {
-    return this.kycService.createKyc(req.user.role, createKycDto);
+  // @Roles(Role.ADMIN)
+  async createKyc(
+    // @Req() req, 
+  @Body() createKycDto: CreateKycDto) {
+    // req;
+    return this.kycService.createKyc(
+      // req.user.role, 
+      createKycDto);
   }
 
   @Get(':userId')

@@ -13,8 +13,8 @@ export class ScheduledRideController {
   constructor(private readonly scheduledRideService: ScheduledRideService) {}
 
   @Post()
-  @UseGuards(RolesGuard)
-  @Roles(Role.DRIVER, Role.PASSENGER)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.DRIVER, Role.PASSENGER)
   create(@Body() createScheduledRideDto: CreateScheduledRideDto) {
     return this.scheduledRideService.create(createScheduledRideDto);
   }
