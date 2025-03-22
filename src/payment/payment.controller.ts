@@ -11,8 +11,8 @@ export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
   @Post()
-  @UseGuards(RolesGuard)
-  @Roles(Role.PASSENGER, Role.DRIVER)
+  // @UseGuards(RolesGuard)
+  // @Roles(Role.PASSENGER, Role.DRIVER)
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.create(createPaymentDto);
   }
