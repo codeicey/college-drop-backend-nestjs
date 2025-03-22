@@ -179,8 +179,8 @@ model Payment {
   method          PaymentMethod
   status          PaymentStatus @default(PENDING)
 
-  ride          Ride?          @relation(fields: [rideId], references: [id], map: "Payment_rideId_fkey")
-  scheduledRide ScheduledRide? @relation(fields: [scheduledRideId], references: [id], map: "Payment_scheduledRideId_fkey")
+  ride          Ride?          @relation(fields: [rideId], references: [id])
+  scheduledRide ScheduledRide? @relation(fields: [scheduledRideId], references: [id])
 }
 
 model Message {

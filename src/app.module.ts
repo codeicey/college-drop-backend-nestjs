@@ -11,7 +11,7 @@ import { DriverModule } from './kyc/driver-details/driver.module';
 import { PassengerModule } from './kyc/passenger-details/passenger.module';
 import { VehicleModule } from './kyc/vehicle/vehicle.module';
 import { RideRequestModule } from './ride-request/ride-request.module';
-import { RideModule } from './ride/ride-request.module';
+import { RideModule } from './ride/ride.module';
 import { ScheduledRideModule } from './scheduled-ride/scheduled-ride.module';
 import { PaymentModule } from './payment/payment.module';
 import { MessageModule } from './message/message.module';

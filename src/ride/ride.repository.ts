@@ -1,13 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { CreateRideDto } from './dto/create-ride.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class RideRepository {
+  constructor(private readonly prisma: PrismaService) {}
+  
   private rides = [];
 
-  create(ride) {
-    this.rides.push(ride);
-    return ride;
-  }
+  async create(data: CreateRideDto){
+    return this.prisma.ride.create({ data });
+  } 
+
+  // create(ride) {
+  //   this.rides.push(ride);
+  //   return ride;
+  // }
 
   findAll() {
     return this.rides;
