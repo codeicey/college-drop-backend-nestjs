@@ -15,7 +15,19 @@ export class UpdateScheduledRideDto {
 
   @IsOptional()
   @IsString()
-  route?: string;
+  startLat?: string;
+
+  @IsOptional()
+  @IsString()
+  startLong?: string;
+
+  @IsOptional()
+  @IsString()
+  endLat?: string;
+
+  @IsOptional()
+  @IsString()
+  endLong?: string;
 
   @IsOptional()
   @IsNumber()

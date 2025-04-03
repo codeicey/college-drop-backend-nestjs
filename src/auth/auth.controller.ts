@@ -8,13 +8,13 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Get('google')
-  @UseGuards(GoogleAuthGuard)
+  // @UseGuards(GoogleAuthGuard)
   async googleLogin() {
     return { message: 'Redirecting to Google OAuth2' };
   }
 
   @Get('google/redirect')
-  @UseGuards(GoogleAuthGuard)
+  // @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req) {
     return this.authService.validateOAuthLogin(req.user);
   }
@@ -22,11 +22,11 @@ export class AuthController {
   // For flutter
 
   @Get('googleflutter')
-  @UseGuards(AuthGuard('google'))
+  // @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {}
 
   @Get('google/callback')
-  @UseGuards(AuthGuard('google'))
+  // @UseGuards(AuthGuard('google'))
   async googleAuthRedirectFlutter(@Req() req, @Res() res) {
     const user = await this.authService.validateGoogleUser(req.user);
     const token = this.authService.generateToken(user);

@@ -127,8 +127,10 @@ model Vehicle {
 model RideRequest {
   id              String     @id @default(uuid())
   passengerId     String
-  pickupLocation  String
-  dropoffLocation String
+  pickupLat  String
+  pickupLong String
+  dropoffLat String
+  dropoffLong String
   requestTime     DateTime   @default(now())
   status          RideStatus @default(PENDING)
 
@@ -143,7 +145,10 @@ model Ride {
   passengerId String
   startTime   DateTime?
   endTime     DateTime?
-  route       String?
+  pickupLat  String
+  pickupLong String
+  dropoffLat String
+  dropoffLong String
   fare        Float
   status      RideStatus @default(PENDING)
 
@@ -159,7 +164,10 @@ model ScheduledRide {
   isDriverPosting Boolean
   startTime       DateTime?
   endTime         DateTime?
-  route           String?
+  startLat  String
+  startLong String
+  endLat String
+  endLong String
   fare            Float
   location        String
   availableSeats  Int

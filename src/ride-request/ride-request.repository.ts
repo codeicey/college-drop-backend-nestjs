@@ -26,7 +26,7 @@ export class RideRequestRepository {
     return this.prisma.rideRequest.findUnique({ where: { id } });
   }
 
-  async acceptRide(driverId: string, rideRequestId: string,fare: number) {
+  async acceptRide(driverId: string, rideRequestId: string, pickupLat: string, pickupLong: string, dropoffLat: string, dropoffLong: string, fare: number) {
     const rideRequest = await this.prisma.rideRequest.findUnique({
       where: { id: rideRequestId },
       include: { passenger: true }, // Include passenger details
@@ -43,6 +43,15 @@ export class RideRequestRepository {
       data: {
         driver: { connect: { id: driverId } }, // Use connect for relations
         passenger: { connect: { id: passengerId } }, // Use connect for relations
+       
+        pickupLat: pickupLat || "0.0",
+        pickupLong: pickupLong || "0.0",
+        dropoffLat: dropoffLat || "0.0",
+        dropoffLong: dropoffLong || "0.0",
+    
+        // startTime: startTime ? new Date(startTime) : null,
+        // endTime: endTime ? new Date(endTime) : null,
+
         fare: fare,
         status: "ACCEPTED",
       },

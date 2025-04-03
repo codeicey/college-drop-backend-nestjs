@@ -8,8 +8,21 @@ export class RideRepository {
   
   private rides = [];
 
-  async create(data: CreateRideDto){
-    return this.prisma.ride.create({ data });
+  async create(dto: CreateRideDto){
+    return this.prisma.ride.create({ 
+      data : {
+        driverId: String(dto.driverId), // Ensure explicit casting
+        passengerId: String(dto.passengerId),
+        startTime: dto.startTime ? new Date(dto.startTime) : undefined, // Convert to Date if applicable
+        endTime: dto.endTime ? new Date(dto.endTime) : undefined,
+        pickupLat: dto.pickupLat ?? null,
+        pickupLong: dto.pickupLong ?? null,
+        dropoffLat: dto.dropoffLat ?? null,
+        dropoffLong: dto.dropoffLong ?? null,
+        fare: dto.fare,
+      },
+
+     });
   } 
 
   // create(ride) {
