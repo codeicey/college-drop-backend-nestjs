@@ -10,16 +10,19 @@ export class ScheduledRideRepository {
   async create(dto: CreateScheduledRideDto) {
     return this.prisma.scheduledRide.create({
       data: {
-        postedById: dto.postedById, // Use DTO to pass this value
+        postedById: String(dto.postedById), // Ensure it's explicitly a string
         isDriverPosting: dto.isDriverPosting,
-        startTime: dto.startTime ? new Date(dto.startTime) : null,
-        endTime: dto.endTime ? new Date(dto.endTime) : null,
-        route: dto.route,
+        startTime: dto.startTime ? new Date(dto.startTime) : undefined, // Convert string to Date if applicable
+        endTime: dto.endTime ? new Date(dto.endTime) : undefined,
+        startLat: dto.startLat ?? null,
+        startLong: dto.startLong ?? null,
+        endLat: dto.endLat ?? null,
+        endLong: dto.endLong ?? null,
         fare: dto.fare,
         location: dto.location,
         availableSeats: dto.availableSeats,
         dateRange: dto.dateRange,
-        status: 'OPEN', // Default status if not provided
+        status: dto.status ?? 'OPEN', // Default status
       },
     });
   }

@@ -5,8 +5,14 @@ export class CreateRideRequestDto {
   passengerId: string;
 
   @IsString()
-  pickupLocation: string;
+  pickupLat: string;
 
   @IsString()
-  dropoffLocation: string;
+  pickupLong: string;
+
+  @IsString()
+  dropoffLat: string;
+
+  @IsString()
+  dropoffLong: string;
 }

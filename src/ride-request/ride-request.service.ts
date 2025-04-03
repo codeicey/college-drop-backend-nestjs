@@ -28,7 +28,7 @@ export class RideRequestService {
     return this.rideRequestRepository.findAll();
   }
 
-  async acceptRide(userRole: Role, userId: string, rideRequestId: string, fare: number, kycVerified: boolean) {
+  async acceptRide(userRole: Role, userId: string, rideRequestId: string, pickupLat: string, pickupLong: string, dropoffLat: string, dropoffLong: string, fare: number, kycVerified: boolean) {
     if (!kycVerified) {
       throw new ForbiddenException('Only KYC verified users can accept rides.');
     }
@@ -41,6 +41,6 @@ export class RideRequestService {
       throw new NotFoundException('Ride request not found or already accepted.');
     }
 
-    return this.rideRequestRepository.acceptRide(userId, rideRequestId, fare);
+    return this.rideRequestRepository.acceptRide(userId, rideRequestId,pickupLat, pickupLong, dropoffLat, dropoffLong ,fare);
   }
 }

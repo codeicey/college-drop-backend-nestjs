@@ -30,9 +30,21 @@ export class RideRequestController {
   }
 
   @Patch(':id/accept')
-  @Roles(Role.DRIVER)
-  async acceptRide(@Req() req, @Param('id') rideRequestId: string ,fare: number) {
-    return this.rideRequestService.acceptRide(req.user.role, req.user.id , rideRequestId, fare,req.user.kycVerified);
+  // @Roles(Role.DRIVER)
+  async acceptRide(
+  @Req() req, 
+  @Param('id') rideRequestId: string,
+  @Body() body: { pickupLat: string; pickupLong: string; dropoffLat: string; dropoffLong: string; fare: number }
+) {
+    return this.rideRequestService.acceptRide(
+      req.user.role, 
+      req.user.id, 
+      rideRequestId,     
+      body.pickupLat,  // Extract from body
+      body.pickupLong, 
+      body.dropoffLat, 
+      body.dropoffLong, 
+      body.fare,req.user.kycVerified);
   }
 
 }

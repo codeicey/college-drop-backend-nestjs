@@ -18,8 +18,20 @@ export class CreateRideDto {
 
   @IsOptional()
   @IsString()
-  route?: string;
+  pickupLat?: string;
 
+  @IsOptional()
+  @IsString()
+  pickupLong?: string;
+
+  @IsOptional()
+  @IsString()
+  dropoffLat?: string;
+
+  @IsOptional()
+  @IsString()
+  dropoffLong?: string;
+  
   @IsNumber()
   fare: number;
 }

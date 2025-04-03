@@ -18,7 +18,19 @@ export class CreateScheduledRideDto {
 
   @IsOptional()
   @IsString()
-  route?: string;
+  startLat?: string;
+
+  @IsOptional()
+  @IsString()
+  startLong?: string;
+
+  @IsOptional()
+  @IsString()
+  endLat?: string;
+
+  @IsOptional()
+  @IsString()
+  endLong?: string;
 
   @IsNumber()
   fare: number;
